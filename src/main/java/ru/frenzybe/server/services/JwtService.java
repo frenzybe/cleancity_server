@@ -20,7 +20,7 @@ import java.util.Map;
 @Service
 public class JwtService {
     @Value("${token.signing.key}")
-    private String jwtSigningKey;
+    public String secretKey;
 
     /**
      * Извлечение имени пользователя из токена
@@ -65,6 +65,7 @@ public class JwtService {
             return false; // или можно вернуть true, если хотите, чтобы приложение пыталось обновить токен
         } catch (Exception e) {
             // Обработка других исключений
+            e.printStackTrace();
             System.out.println("Invalid token: " + e.getMessage());
             return false;
         }
@@ -103,7 +104,7 @@ public class JwtService {
      * @param token Токен
      * @return True, если токен просрочен
      */
-    private boolean isTokenExpired(String token) {
+    public boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
@@ -124,17 +125,18 @@ public class JwtService {
      * @return Данные
      */
     private Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(getSigningKey()).build().parseClaimsJws(token)
+        return Jwts.parser().setSigningKey(getSigningKey()).build().parseSignedClaims(token)
                 .getBody();
     }
+
 
     /**
      * Получение ключа для подписи токена
      *
      * @return Ключ
      */
-    private Key getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(jwtSigningKey);
+    public Key getSigningKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }

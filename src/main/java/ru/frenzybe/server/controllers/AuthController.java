@@ -7,6 +7,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.frenzybe.server.dto.user.SignInRequest;
 import ru.frenzybe.server.dto.user.SignUpRequest;
+import ru.frenzybe.server.dto.user.TokenValidDTO;
 import ru.frenzybe.server.exceptions.CustomException;
 import ru.frenzybe.server.services.AuthenticationService;
 
@@ -35,6 +36,18 @@ public class AuthController {
         } catch (CustomException e) {
             return new ResponseEntity<>(e.getMessage(), e.getStatus());
         } catch (Exception e) {
+            return new ResponseEntity<>("Произошла ошибка при обработке запроса", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/validate_token")
+    public ResponseEntity<?> validateToken(@RequestBody TokenValidDTO tokenValidDTO) {
+        try {
+            return new ResponseEntity<>(authenticationService.validateToken(tokenValidDTO), HttpStatus.OK);
+        } catch (CustomException e) {
+            return new ResponseEntity<>(e.getMessage(), e.getStatus());
+        } catch (Exception e) {
+            e.printStackTrace(); // Добавляем логирование исключения
             return new ResponseEntity<>("Произошла ошибка при обработке запроса", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

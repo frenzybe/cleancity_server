@@ -1,17 +1,20 @@
 package ru.frenzybe.server.services;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import ru.frenzybe.server.dto.user.JwtAuthenticationResponse;
 import ru.frenzybe.server.dto.user.SignInRequest;
 import ru.frenzybe.server.dto.user.SignUpRequest;
+import ru.frenzybe.server.dto.user.TokenValidDTO;
 import ru.frenzybe.server.entities.user.User;
 import ru.frenzybe.server.entities.user.UserRole;
 import ru.frenzybe.server.exceptions.CustomException;
@@ -86,5 +89,18 @@ public class AuthenticationService {
 
         var jwt = jwtService.generateToken(user);
         return new JwtAuthenticationResponse(jwt);
+    }
+
+    public boolean validateToken(TokenValidDTO tokenValidDTO) {
+        try {
+            String token = tokenValidDTO.getToken();
+            String username = jwtService.extractUserName(token);
+            UserDetails userDetails = userService.userDetailsService().loadUserByUsername(username);
+            return jwtService.isTokenValid(token, userDetails);
+        } catch (Exception e) {
+            // Log the exception instead of printing stack trace
+            e.printStackTrace();
+            throw new CustomException("Ошибка валидации токена", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
