@@ -1,6 +1,7 @@
 package ru.frenzybe.server.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
@@ -26,9 +27,17 @@ public class Promotion {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
+
     private String description;
 
     private String value;
+
+    @OneToOne
+    @JoinColumn(name = "promotion_id")
+    private Promotion promotion;
 
     private LocalDate expiryDate;
 

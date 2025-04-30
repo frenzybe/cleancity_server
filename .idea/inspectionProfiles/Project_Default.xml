@@ -1,0 +1,12 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="IncorrectHttpHeaderInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="customHeaders">
+        <set>
+          <option value="Authorization Bearer yJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjIsImVtYWlsIjoiYWRtaW4iLCJzdWIiOiJhZG1pbiIsImlhdCI6MTczNTU4NzA1MSwiZXhwIjoxNzM1NzMxMDUxfQ.0BO1-4uoSwkQN_VeDfsze9zYUKHgr1YhoRRbZwoznwU" />
+        </set>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>

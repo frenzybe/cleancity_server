@@ -7,6 +7,10 @@ import ru.frenzybe.server.entities.Promotion;
 import ru.frenzybe.server.entities.Urn;
 import ru.frenzybe.server.entities.user.User;
 
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.util.Date;
+
 @Getter
 @Setter
 @Entity
@@ -39,5 +43,8 @@ public class Transaction {
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "promotion_id", unique = true)
     private Promotion promotion;
+
+    @Column(name = "date_time", nullable = false)
+    private ZonedDateTime dateTime;
 
 }

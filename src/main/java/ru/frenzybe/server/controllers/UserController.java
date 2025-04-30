@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import ru.frenzybe.server.dto.ResponseDTO;
+import ru.frenzybe.server.dto.user.RatingDTO;
 import ru.frenzybe.server.entities.transaction.Transaction;
 import ru.frenzybe.server.entities.user.User;
 import ru.frenzybe.server.errors.AppError;
@@ -74,6 +75,13 @@ public class UserController {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/rating")
+    public ResponseEntity<?> listRatings() {
+        RatingDTO rating = userService.getRating();
+        return new ResponseEntity<>(rating, HttpStatus.OK);
+    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {

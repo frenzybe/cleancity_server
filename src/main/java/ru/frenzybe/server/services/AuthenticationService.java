@@ -50,6 +50,7 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(UserRole.ROLE_USER)
                 .balance(0)
+                .countOfRefills(0)
                 .build();
 
         try {

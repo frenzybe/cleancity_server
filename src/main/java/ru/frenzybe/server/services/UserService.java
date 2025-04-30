@@ -7,6 +7,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import ru.frenzybe.server.dto.user.RatingDTO;
+import ru.frenzybe.server.dto.user.TopUserDTO;
 import ru.frenzybe.server.entities.transaction.Transaction;
 import ru.frenzybe.server.entities.user.User;
 import ru.frenzybe.server.entities.user.UserRole;
@@ -14,6 +16,8 @@ import ru.frenzybe.server.exceptions.CustomException;
 import ru.frenzybe.server.repositories.UserRepository;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -118,6 +122,23 @@ public class UserService {
         User user = getCurrentUser();
         user.setBalance(user.getBalance() - num);
         save(user);
+    }
+
+    public List<TopUserDTO> getTop3Ratings() {
+        List<User> users =  userRepository.findTop3ByOrderByCountOfRefillsDesc();
+        return users.stream().map(user -> new TopUserDTO(user.getUsername(), user.getCountOfRefills()))
+                .collect(Collectors.toList());
+    }
+
+    public Optional<Long> findUserPositionFromRating(){
+        User user = getCurrentUser();
+
+        Optional<Long> betterUsersCount = userRepository.countBetterUsers(user.getCountOfRefills(), user.getId());
+        return betterUsersCount.map(aLong -> aLong + 1);
+    }
+
+    public RatingDTO getRating() {
+        return new RatingDTO(getTop3Ratings(), findUserPositionFromRating());
     }
 
     /**

@@ -9,7 +9,10 @@ import ru.frenzybe.server.entities.transaction.Transaction;
 import ru.frenzybe.server.entities.transaction.TransactionType;
 import ru.frenzybe.server.entities.user.User;
 import ru.frenzybe.server.repositories.TransactionRepository;
+import ru.frenzybe.server.repositories.UserRepository;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -20,13 +23,21 @@ public class TransactionService {
     private final UrnService urnService;
     private final PromotionService promotionService;
 
+    private final UserRepository userRepository;
+
     public Transaction createReplenishTransaction(TransactionTypeReplenishmentDto transactionTypeReplenishmentDto) {
+        User user = userService.getCurrentUser();
+
         Transaction transaction = Transaction.builder()
-                .user(userService.getCurrentUser())
+                .user(user)
                 .urn(urnService.getById(transactionTypeReplenishmentDto.getUrnId()))
                 .transactionType(TransactionType.TYPE_REPLENISHMENT)
                 .price(transactionTypeReplenishmentDto.getPrice())
+                .dateTime(ZonedDateTime.now(ZoneId.of(transactionTypeReplenishmentDto.getTimeZone())))
                 .build();
+
+        user.setCountOfRefills(user.getCountOfRefills() + 1);
+        userRepository.save(user);
 
         return transactionRepository.save(transaction);
     }
@@ -39,6 +50,7 @@ public class TransactionService {
                 .user(userService.getCurrentUser())
                 .price(promotion.getPrice())
                 .promotion(promotionService.getPromotion(transactionTypeBuyDto.getPromotionId()))
+                .dateTime(ZonedDateTime.now(ZoneId.of(transactionTypeBuyDto.getTimeZone())))
                 .build();
 
         if (transaction.getPromotion() != null) {

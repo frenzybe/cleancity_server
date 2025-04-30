@@ -2,6 +2,7 @@ package ru.frenzybe.server.entities.user;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.security.core.GrantedAuthority;
@@ -32,6 +33,8 @@ public class User implements UserDetails {
     private String password;
 
     @Column(name = "email", unique = true, nullable = false)
+    @NotBlank(message = "Email is mandatory")
+    @Email(message="Email should be valid")
     private String email;
 
     @Column(name = "balance", nullable = false)
@@ -47,6 +50,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", orphanRemoval = true)
     @JsonManagedReference
     private List<Transaction> transactions = new ArrayList<>();
+
+    @Column(name = "count_of_refills")
+    private Integer countOfRefills;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

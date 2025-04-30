@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.frenzybe.server.dto.promotion.PromotionDto;
+import ru.frenzybe.server.entities.Category;
 import ru.frenzybe.server.entities.Promotion;
 import ru.frenzybe.server.entities.user.User;
 import ru.frenzybe.server.repositories.PromotionRepository;
@@ -39,6 +40,10 @@ public class PromotionService {
         return promotionRepository.getPromotionByName(name);
     }
 
+    public List<Promotion> getPromotionByUserIsNullAndCategory(Category category) {
+        return promotionRepository.findByUserIsNullAndCategory(category);
+    }
+
     public Promotion updatePromotion(Long id, PromotionDto promotionDto) {
         Promotion promotion = promotionRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         if (promotionDto.getName() != null) {
@@ -64,5 +69,9 @@ public class PromotionService {
         promotion.setUser(user);
         promotion.setExpiryDate(LocalDate.now().plusMonths(1));
         promotionRepository.save(promotion);
+    }
+
+    public List<Promotion> getByCategory(Category category){
+        return promotionRepository.getPromotionsByCategory(category);
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.frenzybe.server.dto.ResponseDTO;
-import ru.frenzybe.server.dto.urn.UrnCreateDTO;
+import ru.frenzybe.server.dto.urn.UrnDTO;
 import ru.frenzybe.server.entities.Urn;
 import ru.frenzybe.server.errors.AppError;
 import ru.frenzybe.server.services.UrnService;
@@ -23,7 +23,7 @@ public class UrnController {
     private final UrnService urnService;
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody UrnCreateDTO urnCreateDTO) {
+    public ResponseEntity<?> create(@RequestBody UrnDTO urnCreateDTO) {
         try {
             return new ResponseEntity<>(urnService.create(urnCreateDTO), HttpStatus.CREATED);
         } catch (PropertyValueException e) {
@@ -83,7 +83,7 @@ public class UrnController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody UrnCreateDTO urnDto) {
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody UrnDTO urnDto) {
         try {
             Urn updatedUrn = urnService.updateUrnLocation(id, urnDto);
             return new ResponseEntity<>(updatedUrn, HttpStatus.OK);

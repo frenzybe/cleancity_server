@@ -2,12 +2,10 @@ package ru.frenzybe.server.services;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.PropertyValueException;
 import org.springframework.stereotype.Service;
-import ru.frenzybe.server.dto.urn.UrnCreateDTO;
+import ru.frenzybe.server.dto.urn.UrnDTO;
 import ru.frenzybe.server.entities.Urn;
 import ru.frenzybe.server.repositories.UrnRepository;
-import ru.frenzybe.server.repositories.UserRepository;
 
 import java.util.List;
 
@@ -16,7 +14,7 @@ import java.util.List;
 public class UrnService {
     private final UrnRepository urnRepository;
 
-    public Urn create(UrnCreateDTO urnCreateDTO) {
+    public Urn create(UrnDTO urnCreateDTO) {
         return urnRepository.save(Urn.builder()
                 .number(urnCreateDTO.getNumber())
                 .location(urnCreateDTO.getLocation())
@@ -35,7 +33,7 @@ public class UrnService {
         return urnRepository.findById(id).orElse(null);
     }
 
-    public Urn updateUrnLocation(Long id, UrnCreateDTO urnDTO) {
+    public Urn updateUrnLocation(Long id, UrnDTO urnDTO) {
         Urn urn = urnRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Урна не найдена"));
         urn.setLocation(urnDTO.getLocation());
         return urnRepository.save(urn);
