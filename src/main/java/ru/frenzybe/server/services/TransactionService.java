@@ -11,8 +11,7 @@ import ru.frenzybe.server.entities.user.User;
 import ru.frenzybe.server.repositories.TransactionRepository;
 import ru.frenzybe.server.repositories.UserRepository;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -25,23 +24,6 @@ public class TransactionService {
 
     private final UserRepository userRepository;
 
-    public Transaction createReplenishTransaction(TransactionTypeReplenishmentDto transactionTypeReplenishmentDto) {
-        User user = userService.getCurrentUser();
-
-        Transaction transaction = Transaction.builder()
-                .user(user)
-                .urn(urnService.getById(transactionTypeReplenishmentDto.getUrnId()))
-                .transactionType(TransactionType.TYPE_REPLENISHMENT)
-                .price(transactionTypeReplenishmentDto.getPrice())
-                .dateTime(ZonedDateTime.now(ZoneId.of(transactionTypeReplenishmentDto.getTimeZone())))
-                .build();
-
-        user.setCountOfRefills(user.getCountOfRefills() + 1);
-        userRepository.save(user);
-
-        return transactionRepository.save(transaction);
-    }
-
     public Transaction createBuyTransaction(TransactionTypeBuyDto transactionTypeBuyDto) {
         Promotion promotion = promotionService.getPromotion(transactionTypeBuyDto.getPromotionId());
 
@@ -50,12 +32,30 @@ public class TransactionService {
                 .user(userService.getCurrentUser())
                 .price(promotion.getPrice())
                 .promotion(promotionService.getPromotion(transactionTypeBuyDto.getPromotionId()))
-                .dateTime(ZonedDateTime.now(ZoneId.of(transactionTypeBuyDto.getTimeZone())))
+                .dateTime(Instant.now())
                 .build();
 
         if (transaction.getPromotion() != null) {
             promotionService.buyPromotion(userService.getCurrentUser(), promotion);
         }
+
+        return transactionRepository.save(transaction);
+    }
+
+
+    public Transaction createReplenishTransaction(TransactionTypeReplenishmentDto transactionTypeReplenishmentDto) {
+        User user = userService.getCurrentUser();
+
+        Transaction transaction = Transaction.builder()
+                .user(user)
+                .urn(urnService.getById(transactionTypeReplenishmentDto.getUrnId()))
+                .transactionType(TransactionType.TYPE_REPLENISHMENT)
+                .price(transactionTypeReplenishmentDto.getPrice())
+                .dateTime(Instant.now())
+                .build();
+
+        user.setCountOfRefills(user.getCountOfRefills() + 1);
+        userRepository.save(user);
 
         return transactionRepository.save(transaction);
     }

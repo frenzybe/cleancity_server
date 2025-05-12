@@ -17,5 +17,4 @@ public class TransactionTypeReplenishmentDto {
     private Integer price;
     @Schema(description = "Уникальный идентификатор урны", accessMode = Schema.AccessMode.READ_ONLY)
     private Long urnId;
-    private String timeZone;
 }

@@ -16,5 +16,6 @@ public class CategoryDto {
     String description;
 
     @Schema(description = "Условие акции", example = "100 бонусов - 3 месяца подписки на VK Music", accessMode = Schema.AccessMode.READ_ONLY)
-    String conditions;
+    String conditionsPromotion;
+    String termsOfUse;
 }

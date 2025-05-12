@@ -11,10 +11,8 @@ import java.util.List;
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
     // Все транзаеции по типу.
     List<Transaction> findAllByTransactionType(TransactionType transactionType);
-
     // Все транзакции по пользователю.
     List<Transaction> findAllByUserId(Long userId);
-
     // Транзакции по типу у пользователя.
     List<Transaction> findAllByUserIdAndTransactionType(Long user_id, TransactionType transactionType);
 }

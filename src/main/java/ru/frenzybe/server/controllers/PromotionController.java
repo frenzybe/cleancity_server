@@ -2,6 +2,7 @@ package ru.frenzybe.server.controllers;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,7 @@ import ru.frenzybe.server.errors.AppError;
 import ru.frenzybe.server.exceptions.MessageError;
 import ru.frenzybe.server.services.CategoryService;
 import ru.frenzybe.server.services.PromotionService;
+import ru.frenzybe.server.services.UserService;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,10 +24,11 @@ import java.util.Optional;
 public class PromotionController {
     private final PromotionService promotionService;
     private final CategoryService categoryService;
+    private final UserService userService;
 
     @PostMapping
     public ResponseEntity<?> addPromotion(@RequestBody PromotionDto promotionDto) {
-        if (promotionDto.getName() == null || promotionDto.getDescription() == null
+        if (promotionDto.getDescription() == null
                 || promotionDto.getValue() == null) {
             return new ResponseEntity<>(AppError.builder()
                     .status(HttpStatus.BAD_REQUEST.value())
@@ -70,25 +73,9 @@ public class PromotionController {
         }
     }
 
-    @GetMapping("/{name}")
-    public ResponseEntity<?> getPromotionByName(@PathVariable String name) {
-        if (promotionService.getPromotionByName(name) == null) {
-            return new ResponseEntity<>(AppError.builder()
-                    .status(HttpStatus.NOT_FOUND.value())
-                    .message("Акция не найдена!").build(), HttpStatus.NOT_FOUND);
-        }
-        try {
-            return new ResponseEntity<>(promotionService.getPromotionByName(name), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(AppError.builder()
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                    .message("Ошибка сервера!").build(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @GetMapping("/idCategory")
-    public ResponseEntity<?> getPromotionByIdCategory(@RequestParam Long idCategory) {
-        Optional<Category> category = categoryService.getById(idCategory);
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<?> getPromotionByIdCategory(@PathVariable @Param("categoryId") Long categoryId) {
+        Optional<Category> category = categoryService.getById(categoryId);
         if (category.isEmpty())
             return new ResponseEntity<>(MessageError.sendNotFound("Категория не найдена!"), HttpStatus.NOT_FOUND);
 
@@ -129,6 +116,25 @@ public class PromotionController {
                     .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                     .message("Ошибка сервера!").build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<?> getUserPromotions() {
+        try{
+            List<Promotion> userPromotions = promotionService.getByUser(userService.getCurrentUser());
+            return new ResponseEntity<>(userPromotions, HttpStatus.OK);
+        }
+        catch (Exception e){
+            return new ResponseEntity<>(AppError.builder()
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .message("Ошибка сервера!").build(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/{id}")
+    public ResponseEntity<?> hidePromotion(@PathVariable Long id){
+        promotionService.hidePromotion(id);
+        return new ResponseEntity<>(promotionService.getPromotion(id), HttpStatus.OK);
     }
 }
 

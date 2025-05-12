@@ -1,12 +1,14 @@
 package ru.frenzybe.server.entities.transaction;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import jakarta.persistence.*;
 import lombok.*;
 import ru.frenzybe.server.entities.Promotion;
 import ru.frenzybe.server.entities.Urn;
 import ru.frenzybe.server.entities.user.User;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Date;
@@ -20,7 +22,7 @@ import java.util.Date;
 @Table(name = "transaction")
 public class Transaction {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
@@ -42,9 +44,10 @@ public class Transaction {
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "promotion_id", unique = true)
+    @JsonIdentityReference(alwaysAsId=true)
     private Promotion promotion;
 
     @Column(name = "date_time", nullable = false)
-    private ZonedDateTime dateTime;
+    private Instant dateTime;
 
 }

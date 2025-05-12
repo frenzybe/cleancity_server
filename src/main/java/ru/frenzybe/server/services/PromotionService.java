@@ -9,46 +9,45 @@ import ru.frenzybe.server.entities.Promotion;
 import ru.frenzybe.server.entities.user.User;
 import ru.frenzybe.server.repositories.PromotionRepository;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 public class PromotionService {
     private final PromotionRepository promotionRepository;
+    private final CategoryService categoryService;
 
     public Promotion createPromotion(PromotionDto promotionDto) {
         Promotion promotion = Promotion.builder()
-                .name(promotionDto.getName())
                 .description(promotionDto.getDescription())
                 .value(promotionDto.getValue())
                 .price(promotionDto.getPrice())
+                .visible(true)
                 .build();
+
+        if (promotionDto.getCategoryId() != null) {
+            Category category = categoryService.getById(promotionDto.getCategoryId())
+                    .orElseThrow(() -> new EntityNotFoundException("Категория не найдена"));
+            promotion.setCategory(category);
+        }
 
         return promotionRepository.save(promotion);
     }
 
     public List<Promotion> getPromotions() {
-        return promotionRepository.findByUserIsNull();
+        return promotionRepository.findByUserIsNullAndVisibleIsTrue();
     }
 
     public Promotion getPromotion(Long id) {
         return promotionRepository.findById(id).orElse(null);
     }
 
-    public List<Promotion> getPromotionByName(String name) {
-        return promotionRepository.getPromotionByName(name);
-    }
-
     public List<Promotion> getPromotionByUserIsNullAndCategory(Category category) {
-        return promotionRepository.findByUserIsNullAndCategory(category);
+        return promotionRepository.findByCategoryAndUserIsNullAndVisibleIsTrue(category);
     }
 
     public Promotion updatePromotion(Long id, PromotionDto promotionDto) {
         Promotion promotion = promotionRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        if (promotionDto.getName() != null) {
-            promotion.setName(promotionDto.getName());
-        }
         if (promotionDto.getDescription() != null) {
             promotion.setDescription(promotionDto.getDescription());
         }
@@ -67,11 +66,20 @@ public class PromotionService {
 
     public void buyPromotion(User user, Promotion promotion) {
         promotion.setUser(user);
-        promotion.setExpiryDate(LocalDate.now().plusMonths(1));
         promotionRepository.save(promotion);
     }
 
     public List<Promotion> getByCategory(Category category){
-        return promotionRepository.getPromotionsByCategory(category);
+        return promotionRepository.getPromotionsByCategoryAndVisibleIsTrue(category);
+    }
+
+    public List<Promotion> getByUser(User user){
+        return promotionRepository.findByUserAndVisibleIsTrue(user);
+    }
+
+    public void hidePromotion(Long id) {
+        Promotion promotion = promotionRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        promotion.setVisible(false);
+        promotionRepository.save(promotion);
     }
 }

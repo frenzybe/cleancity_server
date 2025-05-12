@@ -22,7 +22,7 @@ public class CategoryController {
     @PostMapping()
     public ResponseEntity<?> createCategory(@RequestBody CategoryDto categoryDto) {
         if (categoryDto.getName() == null || categoryDto.getDescription() == null ||
-                categoryDto.getConditions() == null) {
+                categoryDto.getConditionsPromotion() == null) {
             return new ResponseEntity<>(AppError.builder()
                     .status(HttpStatus.BAD_REQUEST.value())
                     .message("Ошибка при создании категории. Проверьте введенные значения!")

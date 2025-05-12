@@ -11,3 +11,5 @@ stop:
 
 build:
 	docker build -t cleancity_server .
+pkg:
+	./mwnv package

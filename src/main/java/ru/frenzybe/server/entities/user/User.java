@@ -1,17 +1,19 @@
 package ru.frenzybe.server.entities.user;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import ru.frenzybe.server.entities.Promotion;
-import ru.frenzybe.server.entities.transaction.Transaction;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 
 @Builder
 @AllArgsConstructor
@@ -20,9 +22,10 @@ import java.util.*;
 @Setter
 @Entity
 @Table(name = "user_")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
@@ -43,13 +46,6 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private UserRole role;
-
-    @OneToMany(mappedBy = "user", orphanRemoval = true)
-    private List<Promotion> promotions = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", orphanRemoval = true)
-    @JsonManagedReference
-    private List<Transaction> transactions = new ArrayList<>();
 
     @Column(name = "count_of_refills")
     private Integer countOfRefills;

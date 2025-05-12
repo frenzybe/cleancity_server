@@ -19,7 +19,8 @@ public class CategoryService {
         Category category = Category.builder()
                 .name(categoryDto.getName())
                 .description(categoryDto.getDescription())
-                .conditions(categoryDto.getConditions())
+                .conditionsPromotion(categoryDto.getConditionsPromotion())
+                .termsOfUse(categoryDto.getTermsOfUse())
                 .build();
         return categoryRepository.save(category);
     }
@@ -47,8 +48,8 @@ public class CategoryService {
         if (categoryDto.getDescription().isEmpty()) {
             category.setDescription(category.getDescription());
         }
-        if (categoryDto.getConditions().isEmpty()) {
-            category.setConditions(category.getConditions());
+        if (categoryDto.getConditionsPromotion().isEmpty()) {
+            category.setConditionsPromotion(category.getConditionsPromotion());
         }
         return categoryRepository.save(category);
     }

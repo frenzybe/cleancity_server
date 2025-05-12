@@ -15,5 +15,4 @@ import ru.frenzybe.server.entities.user.User;
 public class TransactionTypeBuyDto {
     @Schema(description = "Уникальный идентификатор акции", accessMode = Schema.AccessMode.READ_ONLY)
     private Long promotionId;
-    private String timeZone;
 }
